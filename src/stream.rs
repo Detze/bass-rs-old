@@ -22,6 +22,13 @@ impl Drop for Stream {
 
 impl Stream {
     pub fn create_from_file(file_name: String) -> Result<Stream, BassError> {
+        Self::create_from_file_with_flags(file_name, BASS_UNICODE)
+    }
+
+    pub fn create_from_file_with_flags(
+        file_name: String,
+        flags: DWORD,
+    ) -> Result<Stream, BassError> {
         let handle;
 
         #[cfg(target_family = "windows")]
@@ -29,7 +36,7 @@ impl Stream {
             let file_name_raw = U16CString::from_str(file_name).unwrap();
             let file_name_raw = file_name_raw.into_raw() as *const c_void;
 
-            handle = BASS_StreamCreateFile(0, file_name_raw, 0, 0, BASS_UNICODE);
+            handle = BASS_StreamCreateFile(0, file_name_raw, 0, 0, flags);
         }
 
         #[cfg(target_family = "unix")]
